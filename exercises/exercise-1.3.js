@@ -22,7 +22,7 @@ const getUsers = async (req, res) => {
   console.log("disconnected!");
 
   if (users.length === 0) {
-    return res.status(404).send("no");
+    return res.status(404).send({ status: 404, data: { error: "not found" } });
   }
 
   return res.status(200).send({ status: 200, data: users });
