@@ -2,7 +2,6 @@ const { MongoClient } = require("mongodb");
 
 require("dotenv").config();
 const { MONGO_URI } = process.env;
-console.log('MONGO_URI', MONGO_URI);
 
 const dbFunction = async (dbName) => {
     const client = await MongoClient(MONGO_URI, { useUnifiedTopology: true });
