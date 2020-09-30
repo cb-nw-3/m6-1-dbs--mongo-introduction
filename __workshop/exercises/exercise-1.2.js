@@ -15,15 +15,18 @@ const getCollection = async (dbname) => {
   const db = client.db(dbname);
   console.log("connected!");
 
+  console.log("MONGO_URI: ", MONGO_URI);
+
   // Selects documents in a collection or view and
   //returns a cursor to the selected documents.
   // The toArray() method returns an array
   // that contains all the documents from a cursor.
   //The method iterates completely the cursor,
   //loading all the documents into RAM and exhausting the cursor.
-  const data = await db.collection("users").find().toArray();
-  console.log("data: ", data);
+  return await db.collection("users").find().toArray();
+
   client.close();
-  console.log("disconnected!");
 };
-getCollection("exercise_1");
+module.exports = {
+  getCollection,
+};
