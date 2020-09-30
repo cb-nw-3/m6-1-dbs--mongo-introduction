@@ -10,12 +10,12 @@ const options = {
 };
 
 const createGreeting = async (req, res) => {
+  const client = await MongoClient(MONGO_URI, options);
   try {
     // TODO: connect...
     // TODO: declare 'db'
     // We are using the 'exercises' database
     // and creating a new collection 'greetings'
-    const client = await MongoClient(MONGO_URI, options);
 
     await client.connect();
 
