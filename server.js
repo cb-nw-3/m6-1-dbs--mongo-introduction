@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const { getCollection } = require("./__workshop/exercises/exercise-1.2");
 const { getUsers } = require("./__workshop/exercises/exercise-1.3");
 const { addUser } = require("./__workshop/exercises/exercise-1.4");
+const { createGreeting } = require("./__workshop/exercises/exercise-2");
 // const { addUser } = require("./__workshop/exercises/exercise-1.4");
 
 const PORT = process.env.PORT || 8000;
@@ -18,6 +19,7 @@ express()
   .use("/", express.static(__dirname + "/"))
   .get("/exercise-1/users", getUsers)
   .post("/exercise-1/users", addUser)
+  .post("/exercise-2/greeting", createGreeting)
 
   // exercise 1
 
