@@ -94,9 +94,32 @@ const deleteGreeting = async (req, res) => {
   }
 };
 
+const updateGreeting = async (req, res) => {
+  const _id = req.params._id;
+  const client = await MongoClient(MONGO_URI, options);
+
+  const query = { _id };
+  const newValues = { $set: { ...req.body } };
+
+  await client.connect();
+
+  const db = client.db("exercise_1");
+  const r = await db
+    .collection("greetings")
+    .updateOne(query, newValues, (err, result) => {
+      if (err) {
+        res.status(500).json({ status: 500 });
+      } else {
+        res.status(204).json({ status: 204, result: result });
+      }
+      client.close();
+    });
+};
+
 module.exports = {
   createGreeting,
   getGreeting,
   getGreetings,
   deleteGreeting,
+  updateGreeting,
 };
