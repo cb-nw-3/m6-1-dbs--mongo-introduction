@@ -69,7 +69,7 @@ const getGreetings = async (req, res) => {
         const data = result.slice(start, limit);
         console.log("limit", limit);
         console.log("data", data);
-        res.status(200).json({ status: 200, data: data });
+        res.status(200).json({ status: 200, start, limit, data: data });
       } else {
         res.status(404).json({ status: 404, data: "Not Found" });
       }
