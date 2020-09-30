@@ -40,4 +40,38 @@ const getGreeting = async (req, res) => {
   });
 };
 
-module.exports = { createGreeting, getGreeting };
+const findMultiple = async (req, res) => {
+  let { start, limit } = req.query;
+  if (start === undefined) {
+    start = 10;
+  }
+  if (limit === undefined) {
+    limit = 10;
+  }
+  console.log(start);
+  console.log(limit);
+  let lastIndex = parseInt(start) + parseInt(limit);
+  const client = await MongoClient(MONGO_URI, options);
+  await client.connect();
+
+  const db = client.db("exercises");
+  let foundItems = await db.collection("greetings").find().toArray();
+
+  let slice;
+  if (lastIndex > foundItems.length - 1) {
+    slice = foundItems.slice(start);
+    limit = foundItems.length - parseInt(start);
+  } else {
+    console.log("inside else");
+    slice = foundItems.slice(start, lastIndex);
+  }
+  if (foundItems.length >= 1) {
+    res
+      .status(200)
+      .json({ status: 200, start: start, limit: limit, data: slice });
+  } else {
+    res.status(404).json({ status: 404, message: "could not find data" });
+  }
+};
+
+module.exports = { createGreeting, getGreeting, findMultiple };
