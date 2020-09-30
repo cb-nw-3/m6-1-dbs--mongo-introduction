@@ -51,5 +51,34 @@ const getGreeting = async (req, res) => {
   console.log("disconnected!");
 };
 
+const getGreetings = async (req, res) => {
+  const client = await MongoClient(MONGO_URI, options);
+  await client.connect();
+  const db = client.db("exercise_1");
+  console.log("connected!");
+
+  const greetings = await db
+    .collection("greetings")
+    .find()
+    .toArray((err, result) => {
+      if (result.length > 0) {
+        const start = Number(req.query.start) || 0;
+        let limit = start + Number(req.query.limit) || 25;
+        limit <= result.length ? limit : (limit = result.length);
+
+        const data = result.slice(start, limit);
+        console.log("limit", limit);
+        console.log("data", data);
+        res.status(200).json({ status: 200, data: data });
+      } else {
+        res.status(404).json({ status: 404, data: "Not Found" });
+      }
+      client.close();
+    });
+
+  console.log("disconnected!");
+};
+
 exports.createGreeting = createGreeting;
 exports.getGreeting = getGreeting;
+exports.getGreetings = getGreetings;
