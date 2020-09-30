@@ -9,7 +9,7 @@ const options = {
 };
 
 const addUser = async (req, res) => {
-    const { userName } = req.body;
+    const { name } = req.body;
     const client = await MongoClient(MONGO_URI, options);
 
     await client.connect();
@@ -17,7 +17,7 @@ const addUser = async (req, res) => {
     const db = client.db('m6-1-mongo-introduction');
     console.log("connected!");
 
-    const data = await db.collection("users").insertOne({ userName });
+    const data = await db.collection("users").insertOne({ name });
     console.log(data);
 
     res.status(201).json({ status: 201, data: req.body });
