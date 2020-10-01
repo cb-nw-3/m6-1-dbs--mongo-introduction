@@ -3,8 +3,14 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
+
+// ex 1
 const { getUsers } = require("./exercises/exercise-1.3");
 const { addUser } = require("./exercises/exercise-1.4");
+
+// ex 2
+
+const { createGreeting } = require("./exercises/exercise-2");
 
 const PORT = process.env.PORT || 7000;
 
@@ -21,6 +27,8 @@ express()
   .post("/exercise-1/users", addUser)
 
   // exercise 2
+
+  .post('/exercise-2/greeting', createGreeting)
 
   // handle 404s
   .use((req, res) => res.status(404).type("txt").send("🤷‍♂️"))
