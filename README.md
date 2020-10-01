@@ -38,10 +38,14 @@ _...your cluster is being created_ (This can take a few minutes.)
 ### Create a Database user
 
 1. Select 'Database Access' from the sidebar
-2. Add a new Database User
+2. Add a new Database User`
+
    - Use `Password` for the authentication method.
    - create a username and password (use the `Autogenerate Secure Password` option)
    - copy that password and paste it somewhere temporarily.
+
+   lqJMWcplzuPZtM6j
+   davidelliott
 
 ### Access the database
 
@@ -54,6 +58,17 @@ _...your cluster is being created_ (This can take a few minutes.)
 ![MongoDB Connect](__lecture/assets/mongo_connect.gif)
 
 In the last pane, there is a code snippet. In that code snippet, there is a `uri`. It will look something like this.
+
+const MongoClient = require('mongodb').MongoClient;
+const uri = "mongodb+srv://davidelliott:<password>@cluster0.wims8.mongodb.net/<dbname>?retryWrites=true&w=majority";
+const client = new MongoClient(uri, { useNewUrlParser: true });
+client.connect(err => {
+const collection = client.db("test").collection("devices");
+// perform actions on the collection object
+client.close();
+});
+
+mongodb+srv://davidelliott:<password>@cluster0.wims8.mongodb.net/<dbname>?retryWrites=true&w=majority
 
 ```js
 const uri =

@@ -27,7 +27,7 @@ const { MONGO_URI } = process.env;
 ```js
 const dbFunction = async (dbName) => {
   // creates a new client
-  const client = await MongoClient(MONGO_URI, options);
+  const client = await MongoClient(MONGO_URI);
 
   // connect to the client
   await client.connect();
