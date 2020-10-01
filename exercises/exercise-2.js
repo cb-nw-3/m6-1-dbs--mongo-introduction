@@ -38,15 +38,27 @@ const getGreeting = async (req, res) => {
 
     const db = client.db("exercise_2");
 
-    db.collection("greetings").findOne(
-      { _id: _id.toUpperCase() },
-      (err, result) => {
-        result
-          ? res.status(200).json({ status: 200, _id, data: result })
-          : res.status(404).json({ status: 404, _id, data: "Not Found" });
-        client.close();
-      }
-    );
+    if (_id.length > 2) {
+      db.collection("greetings").findOne(
+        { lang: _id.charAt(0).toUpperCase() + _id.slice(1) },
+        (err, result) => {
+          result
+            ? res.status(200).json({ status: 200, lang: _id, data: result })
+            : res.status(404).json({ status: 404, data: "Not Found" });
+          client.close();
+        }
+      );
+    } else {
+      db.collection("greetings").findOne(
+        { _id: _id.toUpperCase() },
+        (err, result) => {
+          result
+            ? res.status(200).json({ status: 200, _id, data: result })
+            : res.status(404).json({ status: 404, _id, data: "Not Found" });
+          client.close();
+        }
+      );
+    }
   } catch (err) {
     res.status(500).json({ status: 500, message: err.message });
   }
@@ -78,7 +90,9 @@ const getGreetings = async (req, res) => {
     if (data.length === 0) {
       res.status(404).json({ status: 404, message: "No data" });
     } else {
-      res.status(200).json({ status: 200, start: start, limit: end, data: newData });
+      res
+        .status(200)
+        .json({ status: 200, start: start, limit: end, data: newData });
     }
     client.close();
   } catch (err) {
@@ -87,4 +101,27 @@ const getGreetings = async (req, res) => {
   client.close();
 };
 
-module.exports = { createGreeting, getGreeting, getGreetings };
+const deleteGreeting = async (req, res) => {
+  try {
+    const client = await MongoClient(MONGO_URI, options);
+
+    const { _id } = req.params;
+
+    await client.connect();
+
+    const db = client.db("exercise_2");
+
+    const data = await db
+      .collection("greetings")
+      .deleteOne({ _id: _id.toUpperCase() });
+    assert.equal(1, data.deletedCount);
+    res.status(204).json({ status: 204, _id });
+
+    client.close();
+  } catch (err) {
+    res.status(500).json({ status: 500, message: err.message });
+  }
+  client.close();
+};
+
+module.exports = { createGreeting, getGreeting, getGreetings, deleteGreeting };

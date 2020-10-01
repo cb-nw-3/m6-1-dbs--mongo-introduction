@@ -1,4 +1,3 @@
-const { response } = require("express");
 const { MongoClient } = require("mongodb");
 
 require("dotenv").config();
