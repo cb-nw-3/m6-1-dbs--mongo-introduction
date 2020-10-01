@@ -74,4 +74,51 @@ const findMultiple = async (req, res) => {
   }
 };
 
-module.exports = { createGreeting, getGreeting, findMultiple };
+const deleteGreeting = async (req, res) => {
+  const { _id } = req.params;
+  const client = await MongoClient(MONGO_URI, options);
+  try {
+    await client.connect();
+
+    const db = client.db("exercises");
+    const r = await db.collection("greetings").deleteOne({ _id });
+    assert.equal(1, r.deletedCount);
+    res.status(204).json({ status: 204, deletedItemId: _id });
+  } catch (err) {
+    res.status(500).json({ status: 500, message: err.message });
+  }
+  client.close();
+};
+
+const updateGreeting = async (req, res) => {
+  const { _id } = req.params;
+  const { hello } = req.body;
+  const client = await MongoClient(MONGO_URI, options);
+  try {
+    await client.connect();
+
+    const db = client.db("exercises");
+    if (hello === undefined) {
+      res
+        .status(400)
+        .json({ status: 400, message: "hello key not present in body" });
+      return;
+    }
+    const newValue = { $set: { hello } };
+    const r = await db.collection("greetings").updateOne({ _id }, newValue);
+
+    assert.equal(1, r.matchedCount);
+    assert.equal(1, r.modifiedCount);
+    res.status(200).json({ status: 200, _id, ...req.body });
+  } catch (err) {
+    res.status(500).json({ status: 500, message: err.message });
+  }
+};
+
+module.exports = {
+  createGreeting,
+  getGreeting,
+  findMultiple,
+  deleteGreeting,
+  updateGreeting,
+};
