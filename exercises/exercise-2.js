@@ -51,4 +51,29 @@ const getGreeting = async (req, res) => {
   }
 };
 
-module.exports = { createGreeting, getGreeting };
+const getGreetings = async (req, res) => {
+  const client = await MongoClient(MONGO_URI, options);
+  await client.connect();
+  const db = client.db("exercise_1");
+  console.log("connected!");
+
+  db.collection("greetings")
+    .find()
+    .toArray((err, result) => {
+      if (result.length) {
+        const start = Number(req.query.start) || 0;
+        const realStart = start > -1 && start < result.length ? start : 0;
+        const end = realStart + (Number(req.query.limit) || 25);
+        const realEnd = end > result.length ? result.length - 1 : end;
+        const data = result.slice(realStart, realEnd);
+
+        res.status(200).json({ status: 200, data });
+      } else {
+        res.status(404).json({ status: 404, data: "Something's wrong!" });
+      }
+      client.close();
+      console.log("disconnected!");
+    });
+};
+
+module.exports = { createGreeting, getGreeting, getGreetings };
