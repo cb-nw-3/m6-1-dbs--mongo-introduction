@@ -17,15 +17,13 @@ const getUsers = async (req, res) => {
   // connect to the client
   await client.connect();
   const db = client.db("exercise_1");
-
   const data = await db.collection("users").find().toArray();
-
-  data
+  data.length
     ? res.status(200).json({ status: 200, data })
     : res.status(404).json({ status: 404, message: "No data found!" });
-
-  // close the connection to the database server
+  console.log(data);
   client.close();
+  console.log("disconnected!");
 };
 
 module.exports = { getUsers };
