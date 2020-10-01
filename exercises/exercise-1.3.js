@@ -15,8 +15,8 @@ const getUsers = async (req, res) => {
     const db = client.db("exercise_1")
 
     const data = await db.collection("users").find().toArray();
-
-    data.length ? res.status(200).json({ status: 200, data}) : res.status(404).json({ status: 404, message: "No data found."});
+    // If there is Data in the array, it will send a res 200 with the data, if the array is empty / missing data, a res 404 is sent with the message No data found.
+    data.length ? res.status(200).json({ status: 200, data}) : res.status(404).json({ status: 404, message: "No data found!"});
     client.close()
 }
 
