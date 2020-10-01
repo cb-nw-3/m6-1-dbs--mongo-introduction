@@ -10,9 +10,9 @@ const options = {
 };
 
 const createGreeting = async (req, res) => {
+    const client = await MongoClient(MONGO_URI, options);
     try {
         const { lang, _id, hello } = req.body;
-        const client = await MongoClient(MONGO_URI, options);
 
         await client.connect();
 
