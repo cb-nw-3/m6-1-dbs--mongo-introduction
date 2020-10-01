@@ -70,7 +70,7 @@ const getGreetings = async (req, res) => {
       start = 0;
       end = 25;
     } else {
-      end > data.length ? (end = data.length) : (end = end + start);
+      end + start > data.length ? (end = data.length) : (end = end + start);
     }
 
     const newData = data.slice(start, end);
@@ -78,7 +78,7 @@ const getGreetings = async (req, res) => {
     if (data.length === 0) {
       res.status(404).json({ status: 404, message: "No data" });
     } else {
-      res.status(200).json({ status: 200, data: newData });
+      res.status(200).json({ status: 200, start: start, limit: end, data: newData });
     }
     client.close();
   } catch (err) {
