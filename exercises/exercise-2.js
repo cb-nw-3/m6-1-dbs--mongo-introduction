@@ -98,6 +98,42 @@ const deleteGreeting = async (req, res) => {
   } catch (err) {
     res.status(500).json({ status: 500, message: "not found" });
   }
+  client.close();
+};
+
+const updateGreeting = async (req, res) => {
+  const _id = req.params._id.toUpperCase();
+  const { hello } = req.body;
+
+  if (!hello) {
+    return res.status(400).json({ status: 400, message: "invalid query" });
+  }
+
+  const query = { _id };
+  const newValues = { $set: { hello } };
+
+  const client = await MongoClient(MONGO_URI, options);
+
+  try {
+    await client.connect();
+    const db = client.db("exercise_2");
+    const r = await db.collection("greetings").updateOne(query, newValues);
+    assert.equal(1, r.matchedCount);
+    assert.equal(1, r.modifiedCount);
+
+    res.status(200).json({ status: 200, _id, ...req.body });
+  } catch (err) {
+    res.status(500).json({ status: 500, message: err.message });
+  }
+  client.close();
+};
+
+module.exports = {
+  createGreeting,
+  getGreeting,
+  getGreetings,
+  deleteGreeting,
+  updateGreeting,
 };
 
 const capitalizeFirst = (string) => {
@@ -113,5 +149,3 @@ const capitalizeFirst = (string) => {
 
   return stringArr.join("");
 };
-
-module.exports = { createGreeting, getGreeting, getGreetings, deleteGreeting };
