@@ -28,18 +28,27 @@ const createGreeting = async (req, res) => {
 };
 
 const getGreeting = async (req, res) => {
-  const { _id } = req.params;
+  const _id = req.params._id;
+
+  let query = { _id };
+
+  if (_id.length > 2) {
+    query = { lang: capitalizeFirst(_id) };
+  }
   const client = await MongoClient(MONGO_URI, options);
 
   await client.connect();
   const db = client.db("exercise_2");
 
-  db.collection("greetings").findOne({ _id }, (err, result) => {
-    result
-      ? res.status(200).json({ status: 200, _id, data: result })
-      : res.status(404).json({ status: 404, _id, data: "Not Found" });
-    client.close();
-  });
+  const r = await db.collection("greetings").findOne(query);
+
+  if (r) {
+    res.status(200).json({ status: 200, query: _id, data: r });
+  } else {
+    res.status(404).json({ status: 404, query: _id, data: "Not Found" });
+  }
+
+  client.close();
 };
 
 const getGreetings = async (req, res) => {
@@ -67,10 +76,42 @@ const getGreetings = async (req, res) => {
       throw new Error({ message: "not found" });
     }
   } catch (err) {
-    res.status(404).json({ status: 404, data: err.message });
+    res.status(500).json({ status: 404, data: err.message });
   }
 
   client.close();
 };
 
-module.exports = { createGreeting, getGreeting, getGreetings };
+const deleteGreeting = async (req, res) => {
+  const client = MongoClient(MONGO_URI, options);
+
+  const _id = req.params._id.toUpperCase();
+
+  try {
+    await client.connect();
+
+    const db = client.db("exercise_2");
+    const r = await db.collection("greetings").deleteOne({ _id });
+
+    assert.equal(1, r.deletedCount);
+    res.status(205).json({ status: 204, deleted: _id });
+  } catch (err) {
+    res.status(500).json({ status: 500, message: "not found" });
+  }
+};
+
+const capitalizeFirst = (string) => {
+  const stringArr = string.split("");
+
+  for (let i = 0; i < stringArr.length; i++) {
+    if (i === 0) {
+      stringArr[i] = stringArr[i].toUpperCase();
+    } else {
+      stringArr[i] = stringArr[i].toLowerCase();
+    }
+  }
+
+  return stringArr.join("");
+};
+
+module.exports = { createGreeting, getGreeting, getGreetings, deleteGreeting };
