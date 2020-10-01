@@ -97,6 +97,45 @@ const deleteGreeting = async (req, res) => {
     console.log(err.stack);
     res.status(500).json({ status: 500, message: err.message });
   }
+  client.close();
+  console.log("disconnected!");
+};
+
+const updateGreeting = async (req, res) => {
+  console.log("req.body", req.body);
+  const body = req.body;
+  const _id = req.params._id;
+  const query = { _id };
+
+  const client = await MongoClient(MONGO_URI, options);
+  await client.connect();
+  const db = client.db("exercise_1");
+  console.log("connected!");
+
+  if (body["hello"]) {
+    const validInput = body["hello"];
+    console.log("validInput", validInput);
+    const newValues = { $set: { hello: validInput } };
+
+    const r = await db.collection("greetings").updateOne(query, newValues);
+
+    assert.strictEqual(1, r.matchedCount);
+    assert.strictEqual(1, r.modifiedCount);
+
+    res
+      .status(200)
+      .json({
+        status: 200,
+        _id,
+        ...req.body,
+        matchedCount: r.matchedCount,
+        modifiedCount: r.modifiedCount,
+      });
+  } else {
+    res.status(500).json({ status: 500, message: "wrong input" });
+    return;
+  }
+  client.close();
   console.log("disconnected!");
 };
 
@@ -105,4 +144,5 @@ module.exports = {
   getGreeting,
   getGreetings,
   deleteGreeting,
+  updateGreeting,
 };
