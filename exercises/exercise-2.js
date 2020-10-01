@@ -20,7 +20,7 @@ const createGreeting = async (req, res) => {
         console.log("connected!");
 
         const r = await db.collection("greeting").insertOne({ lang, _id, hello });
-        assert.equal(1, r.insertedCount);
+        assert.strictEqual(1, r.insertedCount);
 
         res.status(201).json({ status: 201, data: req.body });
 
@@ -32,4 +32,19 @@ const createGreeting = async (req, res) => {
     console.log("disconnected!");
 };
 
-module.exports = { createGreeting };
+const getGreeting = async (req, res) => {
+    const client = await MongoClient(MONGO_URI, options);
+    const { _id } = req.params;
+
+    await client.connect();
+    const db = client.db('m6-1-mongo-introduction');
+    db.collection("greetings").findOne({ _id }, (err, result) => {
+        result
+            ? res.status(200).json({ status: 200, _id, data: result })
+            : res.status(404).json({ status: 404, _id, data: "Not Found" });
+        client.close();
+    });
+
+}
+
+module.exports = { createGreeting, getGreeting };
