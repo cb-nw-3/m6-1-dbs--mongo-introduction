@@ -4,6 +4,7 @@ const assert = require("assert");
 require("dotenv").config();
 
 const { MONGO_URI } = process.env;
+console.log("MONGO_URI: ", MONGO_URI);
 
 const options = {
   useNewUrlParser: true,
