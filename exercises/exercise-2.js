@@ -52,7 +52,6 @@ const getGreeting = async (req, res) => {
 };
 
 const getMoreGreetings = async (req, res) => {
-  // this is to check for Query Params in the URL
   // const { start, limit } = req.query;
   // console.log("the start is:", start);
   // console.log("the limit is:", limit);
@@ -79,14 +78,12 @@ const getMoreGreetings = async (req, res) => {
 
         // Return the desired data
         const data = result.slice(cleanStart, cleanEnd);
-        res
-          .status(200)
-          .json({
-            status: 200,
-            start: cleanStart,
-            limit: cleanEnd - cleanStart,
-            data,
-          });
+        res.status(200).json({
+          status: 200,
+          start: cleanStart,
+          limit: cleanEnd - cleanStart,
+          data,
+        });
       } else {
         res.status(404).json({ status: 404, data: "Not Found" });
       }
@@ -94,4 +91,34 @@ const getMoreGreetings = async (req, res) => {
     });
 };
 
-module.exports = { createGreeting, getGreeting, getMoreGreetings };
+const deleteGreeting = async (req, res) => {
+  const { _id } = req.params;
+
+  console.log("Requested ID is:", _id);
+
+  //Create and connect to client
+  const client = await MongoClient(MONGO_URI, options);
+  await client.connect();
+
+  //Access the database
+  const db = client.db("exercise_1");
+  try {
+    //Create a new collection and add the body as an item
+    const r = await db
+      .collection("greetings")
+      .deleteOne({ _id: _id.toUpperCase() });
+    assert.strictEqual(1, r.deletedCount);
+    res.status(204).json({ status: 204, _id });
+  } catch (error) {
+    console.log(err.stack);
+    res.status(500).json({ status: 500, data: req.body, message: err.message });
+  }
+  client.close();
+};
+
+module.exports = {
+  createGreeting,
+  getGreeting,
+  getMoreGreetings,
+  deleteGreeting,
+};
