@@ -17,7 +17,7 @@ const createGreeting = async (req, res) => {
     const client = await MongoClient(MONGO_URI, options);
     await client.connect();
     const db = client.db("exercise_1");
-    const r = await db.collection("greetings").insertMany(req.body);
+    const r = await db.collection("greetings").insertOne(req.body);
     assert.equal(1, r.insertedCount);
     console.log(req.body);
     res.status(201).json({ status: 201, data: req.body });
@@ -31,7 +31,7 @@ const getGreeting = async (req, res) => {
   const { _id } = req.params;
   const client = await MongoClient(MONGO_URI, options);
   await client.connect();
-  const db = client.db("exercises");
+  const db = client.db("exercise_1");
   db.collection("greetings").findOne(
     { _id: _id.toUpperCase() },
     (err, result) => {
