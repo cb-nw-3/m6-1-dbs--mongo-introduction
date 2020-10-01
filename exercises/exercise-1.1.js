@@ -9,10 +9,12 @@ const dbFunction = async (dbName) => {
   // connect to the client
   await client.connect();
 
-  // connect to the database (db name is provided as an argument to the function)
   const db = client.db(dbName);
-
   console.log("connected!");
+
+  // connect to the database (db name is provided as an argument to the function)
+
+  await db.collection("users").insertOne({ name: "Buck Rogers" });
 
   // close the connection to the database server
   client.close();
