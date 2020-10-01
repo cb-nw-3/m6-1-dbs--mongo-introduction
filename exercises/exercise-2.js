@@ -55,10 +55,32 @@ const getGreeting = async (req, res) => {
         ? res.status(200).json({ status: 200, _id, data: result })
         : res.status(404).json({ status: 404, _id, data: "Not found" });
     });
+
+    client.close();
   } catch (err) {
     console.log(err);
   }
 
 };
 
-module.exports = { createGreeting, getGreeting };
+const getGreetings = async (req, res) => {
+  try {
+    const client = await MongoClient(MONGO_URI, options);
+    await client.connect();
+
+    const db = client.db("exercise_1");
+    console.log("connected to db");
+
+    let r = await db.collection("greetings").find().toArray();
+
+    r.length
+      ? res.status(200).json({ status: 200, data: r })
+      : res.status(404).json({ status: 404, data: "Nope" });
+
+    client.close();
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+module.exports = { createGreeting, getGreeting, getGreetings };
