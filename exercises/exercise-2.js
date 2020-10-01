@@ -52,11 +52,10 @@ const getGreeting = async (req, res) => {
 };
 
 const getGreetings = async (req, res) => {
-  
-    const client = await MongoClient(MONGO_URI, options);
+  const client = await MongoClient(MONGO_URI, options);
   await client.connect();
   const db = client.db("exercise_1");
-  console.log(db)
+  console.log(db);
 
   await db
     .collection("greetings")
@@ -68,7 +67,7 @@ const getGreetings = async (req, res) => {
         const end = cleanStart + (Number(req.query.limit) || 25);
         const cleanEnd = end > result.length ? result.length - 1 : end;
 
-          const data = result.slice(cleanStart, cleanEnd)
+        const data = result.slice(cleanStart, cleanEnd);
         res.status(200).json({ status: 200, data });
       } else {
         res.status(404).json({ status: 404, data: "Not Found" });
@@ -78,19 +77,57 @@ const getGreetings = async (req, res) => {
 };
 
 const deleteGreeting = async (req, res) => {
-    const { _id } = req.params;
-    try {
+  const { _id } = req.params;
+  try {
     const client = await MongoClient(MONGO_URI, options);
     await client.connect();
     const db = client.db("exercise_1");
-    const r = await db.collection("greetings").deleteOne({ _id: _id.toUpperCase()});
+    const r = await db
+      .collection("greetings")
+      .deleteOne({ _id: _id.toUpperCase() });
     assert.strictEqual(1, r.deletedCount);
     res.status(204).json({ status: 204, _id });
-    client.close()
+    client.close();
+  } catch (err) {
+    res.status(500).json({ status: 500, data: req.body, message: err.message });
+  }
+};
 
-    } catch (err) {
-        res.status(500).json({ status: 500, data: req.body, message: err.message });
-    }
-}
+const updateGreeting = async (req, res) => {
+  const { _id } = req.params;
+  const { hello } = req.body;
+  if (!hello) {
+    res
+      .status(400)
+      .json({
+        status: 400,
+        data: req.body,
+        message: "Only 'Hello' can be updated!",
+      });
+    return;
+  }
+  try {
+    const query = { _id };
+    const newValues = { $set: { ...req.body } };
+    const client = await MongoClient(MONGO_URI, options);
+    await client.connect();
+    const db = client.db("exercise_1");
+    const r = await db.collection("greetings").updateOne(query, newValues);
+    assert.strictEqual(1, r.matchedCount);
+    assert.strictEqual(1, r.modifiedCount);
+    res.status(200).json({ status: 200, _id });
+    client.close();
 
-module.exports = { createGreeting, getGreeting, getGreetings, deleteGreeting };
+  } catch (err) {
+    res.status(500).json({ status: 500, data: req.body, message: err.message });
+  }
+
+};
+
+module.exports = {
+  createGreeting,
+  getGreeting,
+  getGreetings,
+  deleteGreeting,
+  updateGreeting,
+};

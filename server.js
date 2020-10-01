@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const { getUsers } = require("./exercises/exercise-1.3");
 const { addUser } = require("./exercises/exercise-1.4");
-const { createGreeting, getGreeting, getGreetings, deleteGreeting } = require("./exercises/exercise-2")
+const { createGreeting, getGreeting, getGreetings, deleteGreeting, updateGreeting } = require("./exercises/exercise-2")
 
 const PORT = process.env.PORT || 8000;
 
@@ -26,6 +26,7 @@ express()
   .get('/exercise-2/greeting/:_id', getGreeting)
   .get('/exercise-2/greeting', getGreetings)
   .delete('/exercise-2/greeting/:_id', deleteGreeting)
+  .put('/exercise-2/greeting/:_id', updateGreeting)
 
 
   // handle 404s
