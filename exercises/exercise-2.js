@@ -41,7 +41,6 @@ const createGreeting = async (req, res) => {
 
 const getGreeting = async (req, res) => {
   let _id = req.params._id;
-  console.log(_id);
 
   try {
     const client = await MongoClient(MONGO_URI, options);
@@ -50,11 +49,13 @@ const getGreeting = async (req, res) => {
     const db = client.db("exercise_1");
     console.log("connected to db");
 
-    const r = await db.collection("greetings").findOne({ _id }, (err, result) => {
-      result
-        ? res.status(200).json({ status: 200, _id, data: result })
-        : res.status(404).json({ status: 404, _id, data: "Not found" });
-    });
+    console.log(_id);
+
+    const r = await db.collection("greetings").findOne({ _id })
+
+    r
+      ? res.status(200).json({ status: 200, _id, data: r })
+      : res.status(404).json({ status: 404, _id, data: "Not found" });
 
     client.close();
   } catch (err) {
@@ -64,6 +65,10 @@ const getGreeting = async (req, res) => {
 };
 
 const getGreetings = async (req, res) => {
+
+  let startQueryId = 0;
+  let limitQuery = 10;
+
   try {
     const client = await MongoClient(MONGO_URI, options);
     await client.connect();
@@ -71,7 +76,19 @@ const getGreetings = async (req, res) => {
     const db = client.db("exercise_1");
     console.log("connected to db");
 
-    let r = await db.collection("greetings").find().toArray();
+    if (req.query.start) {
+      startQueryId = Number(req.query.start);
+    }
+
+    if (req.query.limit) {
+      startQueryId
+        ? limitQuery = startQueryId + Number(req.query.limit)
+        : limitQuery = Number(req.query.limit);
+    }
+
+    let holder = await db.collection("greetings").find().toArray();
+
+    let r = holder.slice(startQueryId, startQueryId + limitQuery);
 
     r.length
       ? res.status(200).json({ status: 200, data: r })
@@ -83,4 +100,63 @@ const getGreetings = async (req, res) => {
   }
 };
 
-module.exports = { createGreeting, getGreeting, getGreetings };
+const deleteGreeting = async (req, res) => {
+  let _id = req.params._id;
+
+  try {
+    const client = await MongoClient(MONGO_URI, options);
+    await client.connect();
+
+    const db = client.db("exercise_1");
+    console.log("connected to db");
+
+    const result = await db.collection("greetings").deleteOne({ _id });
+
+    result
+      ? res.status(200).json({ status: 201, _id, })
+      : res.status(404).json({ status: 404, _id, data: "Not found" });
+
+    client.close();
+  } catch (err) {
+    console.log(err);
+  }
+
+};
+
+const updateGreeting = async (req, res) => {
+  let _id = req.params.id;
+
+  let helloValue;
+
+  // validate if there's a valid hello value
+
+  req.body["hello"]
+    ? helloValue = req.body["hello"]
+    : res.status(400).json({ status: 404, _id, data: "Not found", message: "No valid data found" });
+
+  let newValue = { $set: { "hello": helloValue } };
+
+  try {
+    const client = await MongoClient(MONGO_URI, options);
+    await client.connect();
+
+    const db = client.db("exercise_1");
+    console.log("connected to db");
+
+    let query = { _id };
+
+    let r = await db.collection("greetings").updateOne(query, newValue);
+    console.log("doc updated");
+    console.log(r);
+    client.close();
+    assert.equal(1, r.matchedCount);
+    assert.equal(1, r.modifiedCount);
+    res.status(200).json({ status: 200, _id, })
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ status: 500, _id, data: req.body, message: err.message });
+  }
+}
+
+module.exports = { createGreeting, getGreeting, getGreetings, deleteGreeting, updateGreeting };
