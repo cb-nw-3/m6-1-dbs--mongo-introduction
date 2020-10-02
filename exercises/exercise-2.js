@@ -55,7 +55,7 @@ const getGreetings = async (req, res) => {
     const greetings = await db.collection("greetings").find().toArray((err, result) => {
         if (result.length) {
             let start = Number(req.query.start) || 0;
-            let limit = start + Number(req.query.limit) || 2;
+            let limit = start + Number(req.query.limit) || 25;
             limit <= result.length ? limit : (limit = result.length);
 
             const data = result.slice(start, limit);
@@ -67,4 +67,24 @@ const getGreetings = async (req, res) => {
     });
 };
 
-module.exports = { createGreeting, getGreeting, getGreetings };
+const deleteGreeting = async (req, res) => {
+    const client = await MongoClient(MONGO_URI, options);
+    try {
+        const _id = req.params._id;
+
+        await client.connect();
+
+        const db = client.db('m6-1-mongo-introduction');
+
+        const d = await db.collection("greetings").deleteOne({ _id });
+        assert.strictEqual(1, d.deletedCount);
+
+        res.status(204).json({ status: 204 });
+
+        client.close();
+    } catch (err) {
+        res.status(500).json({ status: 500, data: req.body, message: err.message });
+    }
+};
+
+module.exports = { createGreeting, getGreeting, getGreetings, deleteGreeting };
