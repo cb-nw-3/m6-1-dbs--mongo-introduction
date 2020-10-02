@@ -8,22 +8,23 @@ const options = {
   useUnifiedTopology: true,
 };
 
-const getCollection = async (dbName) => {
+const getUsers = async (req, res) => {
   // creates a new client
   const client = await MongoClient(MONGO_URI, options);
 
   // connect to the client
   await client.connect();
-  const db = client.db(dbName);
+  const db = client.db("exercise_1");
 
   const data = await db.collection("users").find().toArray();
-  console.log("This returns users from our collections", data);
+
+  // Terneri operator to return a response.
+  data.length
+    ? res.status(200).json({ status: 200, data })
+    : res.status(404).json({ status: 404, message: "No data found!" });
 
   // close the connection to the database server
   client.close();
-  console.log("disconnected!");
 };
 
-getCollection("exercise_1");
-
-module.exports = { getCollection };
+module.exports = { getUsers };
