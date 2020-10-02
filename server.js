@@ -16,7 +16,8 @@ express()
   .use("/", express.static(__dirname + "/"))
 
   // exercise 1
-
+  .get("/exercise-1/users", getUsers)
+  .post("/exercise-1/users", addUser)
   // exercise 2
 
   // handle 404s
