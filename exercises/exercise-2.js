@@ -44,7 +44,27 @@ const getGreeting = async (req, res) => {
             : res.status(404).json({ status: 404, _id, data: "Not Found" });
         client.close();
     });
-
 }
 
-module.exports = { createGreeting, getGreeting };
+const getGreetings = async (req, res) => {
+    const client = await MongoClient(MONGO_URI, options);
+
+    await client.connect();
+    const db = client.db('m6-1-mongo-introduction');
+
+    const greetings = await db.collection("greetings").find().toArray((err, result) => {
+        if (result.length) {
+            let start = Number(req.query.start) || 0;
+            let limit = start + Number(req.query.limit) || 2;
+            limit <= result.length ? limit : (limit = result.length);
+
+            const data = result.slice(start, limit);
+            res.status(200).json({ status: 200, data: data });
+            client.close();
+        } else {
+            res.status(404).json({ status: 404, data: "Not Found" });
+        }
+    });
+};
+
+module.exports = { createGreeting, getGreeting, getGreetings };
