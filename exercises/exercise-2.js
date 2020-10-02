@@ -10,9 +10,9 @@ const options = {
 };
 
 const createGreeting = async (req, res) => {
-  try {
-    const client = await MongoClient(MONGO_URI, options);
+  const client = await MongoClient(MONGO_URI, options);
 
+  try {
     await client.connect();
 
     const db = client.db("exercise_2");
@@ -29,11 +29,11 @@ const createGreeting = async (req, res) => {
 };
 
 const getGreeting = async (req, res) => {
-  try {
-    const client = await MongoClient(MONGO_URI, options);
+  const client = await MongoClient(MONGO_URI, options);
 
+  try {
     const { _id } = req.params;
-    console.log(_id);
+
     await client.connect();
 
     const db = client.db("exercise_2");
@@ -45,7 +45,6 @@ const getGreeting = async (req, res) => {
           result
             ? res.status(200).json({ status: 200, lang: _id, data: result })
             : res.status(404).json({ status: 404, data: "Not Found" });
-          client.close();
         }
       );
     } else {
@@ -55,7 +54,6 @@ const getGreeting = async (req, res) => {
           result
             ? res.status(200).json({ status: 200, _id, data: result })
             : res.status(404).json({ status: 404, _id, data: "Not Found" });
-          client.close();
         }
       );
     }
@@ -66,9 +64,9 @@ const getGreeting = async (req, res) => {
 };
 
 const getGreetings = async (req, res) => {
-  try {
-    const client = await MongoClient(MONGO_URI, options);
+  const client = await MongoClient(MONGO_URI, options);
 
+  try {
     await client.connect();
 
     const db = client.db("exercise_2");
@@ -94,7 +92,6 @@ const getGreetings = async (req, res) => {
         .status(200)
         .json({ status: 200, start: start, limit: end, data: newData });
     }
-    client.close();
   } catch (err) {
     res.status(500).json({ status: 500, message: err.message });
   }
@@ -102,9 +99,9 @@ const getGreetings = async (req, res) => {
 };
 
 const deleteGreeting = async (req, res) => {
-  try {
-    const client = await MongoClient(MONGO_URI, options);
+  const client = await MongoClient(MONGO_URI, options);
 
+  try {
     const { _id } = req.params;
 
     await client.connect();
@@ -114,14 +111,61 @@ const deleteGreeting = async (req, res) => {
     const data = await db
       .collection("greetings")
       .deleteOne({ _id: _id.toUpperCase() });
-    assert.equal(1, data.deletedCount);
-    res.status(204).json({ status: 204, _id });
 
-    client.close();
+    assert.equal(1, data.deletedCount);
+
+    res.status(204).json({ status: 204, _id });
   } catch (err) {
     res.status(500).json({ status: 500, message: err.message });
   }
   client.close();
 };
 
-module.exports = { createGreeting, getGreeting, getGreetings, deleteGreeting };
+const updateGreeting = async (req, res) => {
+  const client = await MongoClient(MONGO_URI, options);
+
+  try {
+    // look at query and take id
+    const { _id } = req.params;
+    // look if request body contains hello property
+    if (!req.body.hello) {
+      // send error if not
+      res.status(404), json({ status: 404, message: "Hello key not found" });
+    } else {
+      // grab hello key from body
+      let helloKey = req.body.hello;
+      // updateOne params
+      const query = { _id };
+      const newValues = { $set: { hello: helloKey } };
+      //connect client
+      await client.connect();
+      // look up database name
+      const db = client.db("exercise_2");
+      // find id object in database
+      const currentData = await db
+        .collection("greetings")
+        .findOne({ _id: _id.toUpperCase() });
+      // if object already has hello return error
+      if (currentData.hello) {
+        res.status(404).json({ status: 404, message: "Already an hello key" });
+      }
+      // update object if no hello property
+      const data = await db.collection("greetings").updateOne(query, newValues);
+      assert.equal(1, data.matchedCount);
+      assert.equal(1, data.modifiedCount);
+      // send result
+      res.status(204).json({ status: 204, data: req.body });
+    }
+  } catch (err) {
+    res.status(500).json({ status: 500, message: err.message });
+  }
+  client.close();
+};
+
+module.exports = {
+  createGreeting,
+  getGreeting,
+  getGreetings,
+  deleteGreeting,
+  updateGreeting,
+};

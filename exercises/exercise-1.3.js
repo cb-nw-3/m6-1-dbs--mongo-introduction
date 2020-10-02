@@ -14,14 +14,14 @@ const getUsers = async (req, res) => {
 
   await client.connect();
 
-  const db = client.db('exercise_1');
+  const db = client.db("exercise_1");
 
   const data = await db.collection("users").find().toArray();
 
   if (data.length === 0) {
-    res.status(404).json({ status: 404, message: 'NoData'})
+    res.status(404).json({ status: 404, message: "NoData" });
   } else {
-    res.status(200).json({ status: 200, data })
+    res.status(200).json({ status: 200, data });
   }
 
   client.close();
