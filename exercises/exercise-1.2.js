@@ -8,21 +8,21 @@ const options = {
   useUnifiedTopology: true,
 };
 
-// Create a new `async` function called `getCollection`.
+// create a new `async` function called `getCollection`.
 const getCollection = async (dbName) => {
   console.log('Start');
 
-  // Declare a variable called `client`, and assign it the `MongoClient()
+  // declare a variable called `client`, and assign it the `MongoClient()
   const client = await MongoClient(MONGO_URI, options);
 
-  // Connect the client
+  // connect the client
   await client.connect();
   console.log('Try to connect');
 
   const db = client.db(dbName);
   console.log('Connected!');
 
-  // Declare a new variable called `users`
+  // declare a new variable called `users`
   const users = await db.collection('users').find().toArray();
   console.log('Data back from users: ', users);
 
