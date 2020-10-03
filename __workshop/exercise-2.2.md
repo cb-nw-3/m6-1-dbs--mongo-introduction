@@ -1,6 +1,6 @@
 # Exercise 2.2 - Add More than One (`insertMany`)
 
-Take a look at [`greetings.json`](../data/greetings.json). It contains data that needs to be transferred to our database. You could copy/paste each one into Insomnia and add them using the function you created in `2.1` but that would a little inefficient.
+Take a look at [`greetings.json`](../data/greetings.json). It contains data that needs to be transferred to our database. You could copy/paste each one into Insomnia and add them using the function you created in `2.1` but that would be a little inefficient.
 
 Instead, let's write a utility function that will migrate all of the data for us.
 
@@ -10,7 +10,7 @@ Instead, let's write a utility function that will migrate all of the data for us
 4. Declare a variable and assign it the contents of `greetings.json` like so:
 
 ```js
-const greetings = JSON.parse(fs.readFileSync("data/greetings.json"));
+const greetings = JSON.parse(fs.readFileSync('data/greetings.json'));
 ```
 
 5. Create an async function called `batchImport`.
