@@ -34,7 +34,7 @@ const getGreeting = async (req, res) => {
     await client.connect();
     const database = client.db("exercise_1");
     const r = await database
-      .collection("greetings")
+      .collection("two")
       .findOne({ _id }, (err, result) => {
         result
           ? res.status(200).json({ status: 200, _id, data: result })
@@ -45,7 +45,39 @@ const getGreeting = async (req, res) => {
   }
 };
 
+const getGreetings = async (req, res) => {
+  start = req.query.start;
+  limit = req.query.limit;
+
+  if (start === undefined) {
+    start = 1;
+  }
+  if (limit === undefined) {
+    limit = start + 1;
+  }
+
+  try {
+    const client = await MongoClient(MONGO_URI, options);
+    await client.connect();
+    const database = client.db("exercise_1");
+    let r = await database.collection("greetings").find().toArray();
+    if (start + limit > r.length) {
+      limit = start + limit - r.length;
+    }
+    r = r.slice(start, start + limit);
+
+    r
+      ? res
+          .status(200)
+          .json({ status: 200, start: start, limit: limit, data: r })
+      : res.status(404).json({ status: 404, data: "Data Not Found" });
+  } catch (error) {
+    console.log("error: ", error.message);
+  }
+};
+
 module.exports = {
   createGreeting,
   getGreeting,
+  getGreetings,
 };

@@ -9,6 +9,7 @@ const { addUser } = require("./__workshop/exercises/exercise-1.4");
 const {
   createGreeting,
   getGreeting,
+  getGreetings,
 } = require("./__workshop/exercises/exercise-2");
 // const { addUser } = require("./__workshop/exercises/exercise-1.4");
 
@@ -24,6 +25,7 @@ express()
   .get("/exercise-2/:id", getGreeting)
   .post("/exercise-1/users", addUser)
   .post("/exercise-2/greeting", createGreeting)
+  .get("/ex-2/greeting", getGreetings)
 
   // exercise 1
 
