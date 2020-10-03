@@ -101,6 +101,7 @@ const deleteGreeting = async (req, res) => {
 const updateGreeting = async (req, res) => {
   const { _id } = req.params;
   const { hello } = req.body;
+
   if (!hello) {
     res.status(400).json({
       status: 400,
@@ -109,15 +110,16 @@ const updateGreeting = async (req, res) => {
     });
     return;
   }
+
+  const query = { _id };
+  const newValues = { $set: { hello } };
+
   const client = await MongoClient(MONGO_URI, options);
   try {
     await client.connect();
 
     const db = client.db("exercise_1");
     console.log("connected!");
-
-    const query = { _id };
-    const newValues = { $set: { hello } };
 
     const r = await db.collection("greetings").updateOne(query, newValues);
     assert.strictEqual(1, r.matchedCount);
