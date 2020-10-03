@@ -9,7 +9,7 @@ const options = {
 };
 
 const createGreeting = async (req, res) => {
-  console.log(req.body);
+  //   console.log(req.body);
   try {
     // TODO: connect...
     const client = await MongoClient(MONGO_URI, options);
@@ -27,6 +27,16 @@ const createGreeting = async (req, res) => {
     res.status(201).json({
       status: 201,
       data: req.body,
+      //   body: {
+      //     lang: "English",
+      //     _id: "EN",
+      //     hello: "Hello",
+      //   },
+      //   body2: {
+      //     lang: "French",
+      //     _id: "FR",
+      //     hello: "Bonjour",
+      //   },
     });
   } catch (err) {
     console.log(err.stack);
@@ -36,4 +46,24 @@ const createGreeting = async (req, res) => {
   console.log("disconnected!");
 };
 
-module.exports = { createGreeting };
+const getGreeting = async (req, res) => {
+  //   res.status(200).json("bacon"); success
+  const _id = req.params._id;
+  console.log("ID:", _id);
+
+  //Create and connect to client
+  const client = await MongoClient(MONGO_URI, options);
+  await client.connect();
+
+  //Access the database
+  const db = client.db("exercise_1");
+
+  //if the id search result exists then it should return data.
+  db.collection("greetings").findOne({ _id }, (err, result) => {
+    result
+      ? res.status(200).json({ status: 200, _id, data: result })
+      : res.status(404).json({ status: 404, _id, data: "Not Found" });
+    client.close();
+  });
+};
+module.exports = { createGreeting, getGreeting };
