@@ -134,9 +134,54 @@ const deleteGreeting = async (req, res) => {
   client.close();
 };
 
+const updateGreeting = async (req, res) => {
+  // The ID is from the "PUT" endpoint along with the body (sent in Insomnia), with key "hello" and the value input.
+
+  const { _id } = req.params;
+  //   console.log("The id is:", _id);
+  const { hello } = req.body;
+  //   console.log(req.body);
+
+  // This will the a status(400) as only the "hello" key may be updated, will return if another key is entered.
+  if (!hello) {
+    res.status(400).json({
+      status: 400,
+      data: req.body,
+      message: 'Only "hello" may be updated.',
+    });
+    return;
+  }
+
+  // Connect to client
+  const client = await MongoClient(MONGO_URI, options);
+  await client.connect();
+  const db = client.db("exercise_1");
+
+  try {
+    const query = { _id };
+
+    // Passes a JSON object, this updates by $set.
+    const newValues = { $set: { hello } };
+
+    // Updates the hello "key from the respective ID.
+    const r = await db.collection("greetings").updateOne(query, newValues);
+    assert.strictEqual(1, r.matchedCount);
+    assert.strictEqual(1, r.modifiedCount);
+
+    res.status(200).json({ status: 200, _id, hello });
+  } catch (error) {
+    console.log(error.stack);
+    res
+      .status(500)
+      .json({ status: 500, data: req.body, message: error.message });
+  }
+  client.close();
+};
+
 module.exports = {
   createGreeting,
   getGreeting,
   getSomeGreetings,
   deleteGreeting,
+  updateGreeting,
 };
