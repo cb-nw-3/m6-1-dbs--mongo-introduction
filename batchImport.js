@@ -23,7 +23,7 @@ async function bacthImport() {
     await client.connect();
     const db = client.db("exercise_1");
 
-    let inserted = await db.collection("languages").insertMany(greetings);
+    let inserted = await db.collection("greetings").insertMany(greetings);
     console.info(inserted);
   } catch (error) {
     console.log("error");

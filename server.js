@@ -7,7 +7,7 @@ require("dotenv").config();
 
 const { getUsers } = require("./exercises/exercise-1.3");
 const { addUser } = require("./exercises/exercise-1.4");
-const { createGreeting } = require("./exercises/exercise-2");
+const { createGreeting, getGreeting } = require("./exercises/exercise-2");
 
 const PORT = process.env.PORT || 8000;
 const { MONGO_URI } = process.env;
@@ -26,7 +26,7 @@ express()
   .get("/getUsers", getUsers)
   .post("/addUser/:user", addUser)
   .post("/exercise-2/greeting:greeting", createGreeting)
-
+  .get("/getGreeting/:_id", getGreeting)
   // exercise 1
 
   // exercise 2
