@@ -6,7 +6,11 @@ const morgan = require("morgan");
 const { getUsers } = require("./exercises/exercise-1.3");
 const { addUser } = require("./exercises/exercise-1.4");
 
-const { createGreeting, getGreeting } = require("./exercises/exercise-2");
+const {
+  createGreeting,
+  getGreeting,
+  getSomeGreetings,
+} = require("./exercises/exercise-2");
 
 const PORT = process.env.PORT || 8000;
 
@@ -25,6 +29,9 @@ express()
   //##################################  End  exercise 1
 
   //################################## Start exercise 2
+  // exercise 2.4
+  .get("/exercise_2/greeting", getSomeGreetings)
+  // exercise-2.3
   .get("/exercise_2/greeting/:_id", getGreeting)
   .post("/exercise_2/greeting", createGreeting)
 
