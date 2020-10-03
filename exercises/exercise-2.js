@@ -117,4 +117,52 @@ const deleteGreeting = async (req, res) => {
   client.close();
 };
 
-module.exports = { createGreeting, getGreeting, getGreetings, deleteGreeting };
+const updateGreeting = async (req, res) => {
+  // URL param should have the ID to update, and an accompanying body to update
+  // the hello prop of the language
+  const { _id } = req.params;
+  const { hello } = req.body;
+  console.log(req.body);
+
+  // exit out if there is no body to update the hello prop
+  if (!hello) {
+    res.status(400).json({
+      status: 400,
+      data: req.body,
+      message: 'Only "hello" may be updated.',
+    });
+    return;
+  }
+
+  const client = await MongoClient(MONGO_URI, options);
+  await client.connect();
+  const db = client.db("exercise_1");
+
+  try {
+    const query = { _id };
+
+    //passes a json object that will be updated via the $set call
+    const newValues = { $set: { hello } };
+
+    // Update the hello prop of the query ID
+    const r = await db.collection("greetings").updateOne(query, newValues);
+    assert.equal(1, r.matchedCount);
+    assert.equal(1, r.modifiedCount);
+
+    res.status(200).json({ status: 200, _id });
+  } catch (error) {
+    console.log(error.stack);
+    res
+      .status(500)
+      .json({ status: 500, data: req.body, message: error.message });
+  }
+  client.close();
+};
+
+module.exports = {
+  createGreeting,
+  getGreeting,
+  getGreetings,
+  deleteGreeting,
+  updateGreeting,
+};
