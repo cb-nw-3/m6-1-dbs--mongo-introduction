@@ -87,7 +87,7 @@ const deleteGreeting = async (req, res) => {
       .then((result) => console.log(`Deleted ${result.deletedCount} item.`));
     res.status(204).json({ status: 204, message: r + " was deleted" });
   } catch (error) {
-    console.log("error: ", error.message);
+    res.status(404).json({ status: 404, message: error.message });
   }
 };
 
