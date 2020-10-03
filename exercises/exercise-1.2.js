@@ -13,9 +13,9 @@ const options = {
 const getCollection = async (req, res) => {
   const client = await MongoClient(MONGO_URI, options);
   await client.connect();
-  const db = client.db("exercise_1");
+  const db = client.db("users");
 
-  const data = await db.collection("users").find().toArray();
+  const data = await db.collection("greetings").find().toArray();
   console.log(data);
   client.close();
   console.log("disconnected!");

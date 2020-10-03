@@ -11,6 +11,7 @@ const {
   getGreeting,
   getGreetings,
   deleteGreeting,
+  updateGreeting,
 } = require("./exercises/exercise-2");
 
 const PORT = process.env.PORT || 8000;
@@ -31,6 +32,7 @@ express()
   .get("/:_id", getGreeting)
   .get("/ex-2/greeting", getGreetings)
   .delete("/ex-2/greeting/:_id", deleteGreeting)
+  .put("/ex-2/greeting/:_id", updateGreeting)
 
   // handle 404s
   .use((req, res) => res.status(404).type("txt").send("🤷‍♂️"))
