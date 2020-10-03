@@ -73,10 +73,24 @@ const getGreetings = async (req, res) => {
     .collection('greetings')
     .find()
     .toArray((err, result) => {
-      console.log(result);
-      result
-        ? res.status(200).json({ status: 200, data: result })
-        : res.status(404).json({ status: 404, data: 'Not Found' });
+      if (result.length) {
+        // create a start number
+        const startNum = Number(req.query.start) || 0;
+        console.log(`Start number is: ${startNum}`);
+        // create an end number
+        const endNum = startNum + (Number(req.query.limit) || 25);
+        console.log(`End number is: ${endNum}`);
+        // slice startNum & endNum from result to get data between
+        const data = result.slice(startNum, endNum);
+        console.log('Final data:', data);
+
+        res
+          .status(200)
+          .json({ status: 200, start: startNum, limit: endNum, data });
+      } else {
+        res.status(404).json({ status: 404, data: 'Not Found' });
+      }
+
       client.close();
     });
 };
