@@ -51,14 +51,11 @@ const getGreeting = async (req, res) => {
   const _id = req.params._id;
   console.log("ID:", _id);
 
-  //Create and connect to client
   const client = await MongoClient(MONGO_URI, options);
   await client.connect();
 
-  //Access the database
   const db = client.db("exercise_1");
 
-  //if the id search result exists then it should return data.
   db.collection("greetings").findOne({ _id }, (err, result) => {
     result
       ? res.status(200).json({ status: 200, _id, data: result })
@@ -66,4 +63,36 @@ const getGreeting = async (req, res) => {
     client.close();
   });
 };
-module.exports = { createGreeting, getGreeting };
+
+const getGreetings = async (req, res) => {
+  const client = await MongoClient(MONGO_URI, options);
+  await client.connect();
+
+  const db = client.db("exercise_1");
+
+  db.collection("greetings")
+    .find()
+    .toArray((err, result) => {
+      if (result.length) {
+        // store the req.query quantities, or set it to a default of 0 and 25
+        // Check if the start query is a valid number
+        const start = Number(req.query.start) || 0;
+        const cleanStart = start > -1 && start < result.length ? start : 0;
+
+        // Check if the end limit is a valid number.
+        const end = cleanStart + (Number(req.query.limit) || 25);
+        const cleanEnd = end > result.length ? result.length - 1 : end;
+
+        // Return the desired data
+        const data = result.slice(cleanStart, cleanEnd);
+        res.status(200).json({
+          status: 200,
+          data,
+        });
+      } else {
+        res.status(404).json({ status: 404, data: "Not Found" });
+      }
+      client.close();
+    });
+};
+module.exports = { createGreeting, getGreeting, getGreetings };
