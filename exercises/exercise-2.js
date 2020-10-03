@@ -17,8 +17,8 @@ const createGreeting = async (req, res) => {
     // connect to the client
     await client.connect();
 
-    // connect to the database named 'exercise_1'
-    const db = client.db('exercise_1');
+    // connect to the database named 'exercise_2'
+    const db = client.db('exercise_2');
 
     // create a new collection named 'greetings' and insert body from req
     const r = await db.collection('greetings').insertOne(req.body);
@@ -35,4 +35,26 @@ const createGreeting = async (req, res) => {
   client.close();
 };
 
-module.exports = { createGreeting };
+const getGreeting = async (req, res) => {
+  // creates a new client
+  const client = await MongoClient(MONGO_URI, options);
+  console.log('Start');
+
+  const { _id } = req.params;
+
+  // connect to the client
+  await client.connect();
+  console.log('The id is: ', _id);
+
+  // connect to the database named 'exercise_2'
+  const db = client.db('exercise_2');
+
+  await db.collection('greetings').findOne({ _id }, (err, result) => {
+    result
+      ? res.status(200).json({ status: 200, _id, data: result })
+      : res.status(404).json({ status: 404, _id, data: 'Not Found' });
+    client.close();
+  });
+};
+
+module.exports = { createGreeting, getGreeting };

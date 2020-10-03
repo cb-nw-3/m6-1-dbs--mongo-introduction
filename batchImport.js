@@ -21,18 +21,25 @@ const batchImport = async (greetings) => {
     // connect to the client
     await client.connect();
 
-    // connect to the database named 'exercise_1'
-    const db = client.db('exercise_1');
+    // connect to the database named 'exercise_2'
+    const db = client.db('exercise_2');
 
     // create a new collection named 'greetings' and insert body from req
     const r = await db.collection('greetings').insertMany(greetings);
-    assert.strictEqual(134, r.insertedCount);
+    console.log('Greetings length is: ', greetings.length);
+    assert.strictEqual(greetings.length, r.insertedCount);
 
     // on success, send
-    console.log('Success!');
+    console.log('Success!', '\n', { status: 201 });
   } catch (err) {
     // add console error (tested using diff vpn IP address :-))
-    console.log('Error: ', err.stack);
+    console.log(
+      'Error: ',
+      '\n',
+      { status: 500, message: err.message },
+      '\n',
+      `Stack error: ${err.stack}`
+    );
   }
   client.close();
 };
