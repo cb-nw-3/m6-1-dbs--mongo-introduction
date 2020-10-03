@@ -8,6 +8,7 @@ const { getUsers } = require("./__workshop/exercises/exercise-1.3");
 const { addUser } = require("./__workshop/exercises/exercise-1.4");
 const {
   createGreeting,
+  updateGreeting,
   getGreeting,
   getGreetings,
   deleteGreeting,
@@ -28,6 +29,7 @@ express()
   .post("/exercise-2/greeting", createGreeting)
   .get("/ex-2/greeting", getGreetings)
   .delete("/ex-2/greeting/:_id", deleteGreeting)
+  .put("/ex-2/greeting/", updateGreeting)
 
   // exercise 1
 

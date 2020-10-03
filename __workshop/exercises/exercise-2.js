@@ -4,8 +4,6 @@ require("dotenv").config();
 
 const { MONGO_URI } = process.env;
 
-console.log("MONGO_URI in exercise 2: ", MONGO_URI);
-
 const options = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -91,9 +89,29 @@ const deleteGreeting = async (req, res) => {
   }
 };
 
+const updateGreeting = async (req, res) => {
+  LanguageId = req.query.languageId;
+  hello = req.query.hello;
+  try {
+    const client = await MongoClient(MONGO_URI, options);
+    await client.connect();
+    const database = client.db("exercise_1");
+    const red = await database
+      .collection("greetings")
+      .updateOne({ _id: LanguageId }, { $set: { hello: hello } });
+    assert.equal(1, red.matchedCount);
+    assert.equal(1, red.modifiedCount);
+    res.status(200).json({ status: 200, LanguageId: LanguageId, hello: hello });
+  } catch (error) {
+    console.log("Error: " + error.message);
+    res.status(200).json({ status: 200, message: "Salutation already set" });
+  }
+};
+
 module.exports = {
   createGreeting,
   getGreeting,
   getGreetings,
   deleteGreeting,
+  updateGreeting,
 };
