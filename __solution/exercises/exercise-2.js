@@ -1,18 +1,18 @@
-'use strict';
+"use strict";
 
-const { MongoClient } = require('mongodb');
-const assert = require('assert');
+const { MongoClient } = require("mongodb");
+const assert = require("assert");
 
 const createGreeting = async (req, res) => {
-  const client = new MongoClient('mongodb://localhost:27017', {
+  const client = new MongoClient("mongodb://localhost:27017", {
     useUnifiedTopology: true,
   });
 
   try {
     await client.connect();
-    const db = client.db('exercises');
+    const db = client.db("exercises");
 
-    const r = await db.collection('two').insertOne(req.body);
+    const r = await db.collection("two").insertOne(req.body);
     assert.equal(1, r.insertedCount);
     res.status(201).json({ status: 201, data: req.body });
   } catch (err) {
@@ -25,31 +25,31 @@ const createGreeting = async (req, res) => {
 const getGreeting = async (req, res) => {
   const { _id } = req.params;
 
-  const client = new MongoClient('mongodb://localhost:27017', {
+  const client = new MongoClient("mongodb://localhost:27017", {
     useUnifiedTopology: true,
   });
 
   await client.connect();
-  const db = client.db('exercises');
+  const db = client.db("exercises");
 
-  db.collection('two').findOne({ _id: _id.toUpperCase() }, (err, result) => {
+  db.collection("two").findOne({ _id: _id.toUpperCase() }, (err, result) => {
     result
       ? res.status(200).json({ status: 200, _id, data: result })
-      : res.status(404).json({ status: 404, _id, data: 'Not Found' });
+      : res.status(404).json({ status: 404, _id, data: "Not Found" });
     client.close();
   });
 };
 
 const getGreetings = async (req, res) => {
   // create a new client
-  const client = new MongoClient('mongodb://localhost:27017', {
+  const client = new MongoClient("mongodb://localhost:27017", {
     useUnifiedTopology: true,
   });
 
   await client.connect();
-  const db = client.db('exercises');
+  const db = client.db("exercises");
 
-  db.collection('two')
+  db.collection("two")
     .find()
     .toArray((err, result) => {
       if (result.length) {
@@ -60,7 +60,7 @@ const getGreetings = async (req, res) => {
         const data = result.slice(cleanStart, cleanEnd);
         res.status(200).json({ status: 200, data });
       } else {
-        res.status(404).json({ status: 404, data: 'Not Found' });
+        res.status(404).json({ status: 404, data: "Not Found" });
       }
       client.close();
     });
@@ -69,18 +69,18 @@ const getGreetings = async (req, res) => {
 const deleteGreeting = async (req, res) => {
   const { _id } = req.params;
 
-  const client = new MongoClient('mongodb://localhost:27017', {
+  const client = new MongoClient("mongodb://localhost:27017", {
     useUnifiedTopology: true,
   });
 
   await client.connect();
-  const db = client.db('exercises');
+  const db = client.db("exercises");
 
   try {
     await client.connect();
-    const db = client.db('exercises');
+    const db = client.db("exercises");
 
-    const r = await db.collection('two').deleteOne({ _id: _id.toUpperCase() });
+    const r = await db.collection("two").deleteOne({ _id: _id.toUpperCase() });
     assert.equal(1, r.deletedCount);
     res.status(204).json({ status: 204, _id });
   } catch (err) {
@@ -95,30 +95,28 @@ const updateGreeting = async (req, res) => {
   const { hello } = req.body;
 
   if (!hello) {
-    res
-      .status(400)
-      .json({
-        status: 400,
-        data: req.body,
-        message: 'Only "hello" may be updated.',
-      });
+    res.status(400).json({
+      status: 400,
+      data: req.body,
+      message: 'Only "hello" may be updated.',
+    });
     return;
   }
 
-  const client = new MongoClient('mongodb://localhost:27017', {
+  const client = new MongoClient("mongodb://localhost:27017", {
     useUnifiedTopology: true,
   });
 
   await client.connect();
-  const db = client.db('exercises');
+  const db = client.db("exercises");
 
   try {
     await client.connect();
-    const db = client.db('exercises');
+    const db = client.db("exercises");
 
     const query = { _id };
     const newValues = { $set: { hello } };
-    const r = await db.collection('two').updateOne(query, newValues);
+    const r = await db.collection("two").updateOne(query, newValues);
     assert.equal(1, r.matchedCount);
     assert.equal(1, r.modifiedCount);
     res.status(200).json({ status: 200, _id });
