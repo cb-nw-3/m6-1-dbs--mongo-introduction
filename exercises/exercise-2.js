@@ -76,6 +76,8 @@ const getManyGreetings = async (req, res) => {
           console.log('start', start, 'limit', limit, 'init', init, 'end', end);
           res.status(200).json({
             status: 200,
+            start: init,
+            limit: end - init,
             data: result.slice(init, end),
           });
         } else {
