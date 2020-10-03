@@ -3,10 +3,18 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
+require("dotenv").config();
+
 const { getUsers } = require("./exercises/exercise-1.3");
-const { addUser } = require("./exercises/exercise-1.4");
+// const { addUser } = require("./exercises/exercise-1.4");
 
 const PORT = process.env.PORT || 8000;
+const { MONGO_URI } = process.env;
+
+const options = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+};
 
 express()
   .use(morgan("tiny"))
@@ -14,6 +22,7 @@ express()
   .use(bodyParser.json())
   .use(express.urlencoded({ extended: false }))
   .use("/", express.static(__dirname + "/"))
+  .get("/getUsers", getUsers)
 
   // exercise 1
 
