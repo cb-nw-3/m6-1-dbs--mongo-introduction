@@ -28,7 +28,7 @@ const createGreeting = async (req, res) => {
 //2.3
 
 const getGreeting = async (req, res) => {
-  const _id = req.params._id;
+  const _id = req.params._id.toUpperCase();
   try {
     const client = await MongoClient(MONGO_URI, options);
     await client.connect();
@@ -48,17 +48,42 @@ const getGreeting = async (req, res) => {
 
 //2.4
 
-const client = async (req, res) => {
+const getManyGreetings = async (req, res) => {
+  const { start = 0, limit = 25 } = req.query;
+  const [startInt, limitInt] = Object.values({ start, limit }).map(Number);
+
   try {
     const client = await MongoClient(MONGO_URI, options);
     await client.connect();
     const db = client.db(DB2);
 
-    const r = db.collection.find();
-    console.log(r);
+    db.collection('greetings')
+      .find()
+      .toArray((err, result) => {
+        console.log(result);
+        if (result.length) {
+          const init =
+            startInt < 0
+              ? 0
+              : startInt > result.length
+              ? result.length
+              : startInt;
+          const end =
+            startInt + limitInt > result.length
+              ? result.length
+              : startInt + limitInt;
+
+          console.log('start', start, 'limit', limit, 'init', init, 'end', end);
+          res.status(200).json({
+            status: 200,
+            data: result.slice(init, end),
+          });
+        } else {
+        }
+      });
   } catch (err) {
-    res.status(500).json({ status: 400, data: _id, message: err.message });
+    res.status(500).json({ status: 400, message: err.message });
   }
 };
 
-module.exports = { createGreeting, getGreeting };
+module.exports = { createGreeting, getGreeting, getManyGreetings };
