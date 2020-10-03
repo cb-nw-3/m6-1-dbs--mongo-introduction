@@ -65,7 +65,6 @@ const getGreetings = async (req, res) => {
       limit = start + limit - r.length;
     }
     r = r.slice(start, start + limit);
-
     r
       ? res
           .status(200)
@@ -76,8 +75,25 @@ const getGreetings = async (req, res) => {
   }
 };
 
+const deleteGreeting = async (req, res) => {
+  const request = req.params._id;
+  try {
+    const client = await MongoClient(MONGO_URI, options);
+    await client.connect();
+    const database = client.db("exercise_1");
+    const r = await database
+      .collection("greetings")
+      .deleteOne({ _id: request })
+      .then((result) => console.log(`Deleted ${result.deletedCount} item.`));
+    res.status(204).json({ status: 204, message: r + " was deleted" });
+  } catch (error) {
+    console.log("error: ", error.message);
+  }
+};
+
 module.exports = {
   createGreeting,
   getGreeting,
   getGreetings,
+  deleteGreeting,
 };
