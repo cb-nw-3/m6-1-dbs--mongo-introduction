@@ -36,17 +36,20 @@ const createGreeting = async (req, res) => {
 
 const getGreeting = async (req, res) => {
   // res.status(200).json("bacon");
+
+  // Variale created to insert in "get" METHOD in "server.js"
+
   const _id = req.params._id;
   console.log("The language ID is:", _id);
 
-  //Create and connect to client
+  // Connect to client database
   const client = await MongoClient(MONGO_URI, options);
   await client.connect();
 
-  //Access the database
+  // Access the database
   const db = client.db("exercise_1");
 
-  //if the id search result exists then it should return data.
+  // Returns the language we asked for in the collection.
   db.collection("greetings").findOne({ _id }, (err, result) => {
     result
       ? res.status(200).json({ status: 200, _id, data: result })
