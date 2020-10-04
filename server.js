@@ -11,6 +11,7 @@ const {
   createGreeting,
   getGreeting,
   getSeveralGreetings,
+  deleteGreeting,
 } = require("./exercises/exercise-2");
 
 const PORT = process.env.PORT || 8000;
@@ -34,6 +35,7 @@ express()
   .get("/getSeveralGreetings/:start/limit/:limit", getSeveralGreetings)
   .get("/getSeveralGreetings/:start", getSeveralGreetings)
   .get("/getSeveralGreetings/", getSeveralGreetings)
+  .delete("/deleteGreeting/:_id", deleteGreeting)
 
   // exercise 1
 
