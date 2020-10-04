@@ -47,7 +47,68 @@ const getGreeting = async (req, res) => {
   });
 };
 
+const getSeveralGreetings = async (req, res) => {
+  // temporary content... for testing purposes.
+  const client = await MongoClient(MONGO_URI, options);
+  //   res.status(200).json("bacon");
+  let start = req.params.start;
+  let limit = req.params.limit;
+
+  let end = parseInt(start) + parseInt(limit);
+
+  if (limit === undefined) {
+    console.log("limit undefined");
+    // let's treat it as
+  }
+  //http://localhost:8000/getSeveralGreetings/10/limit/10
+
+  console.log(req.params);
+
+  try {
+    await client.connect();
+    const db = client.db("exercise_1");
+
+    const dataFromDB = await db.collection("greetings").find().toArray();
+    console.log(dataFromDB);
+    let sliced_data;
+
+    if (limit === undefined) {
+      data = dataFromDB.slice(parseInt(0), start);
+      console.log(data);
+
+      console.log("limit undefined");
+      data.unshift({
+        Message:
+          "No entry given for limit, so using the single value to represent the number of array elements you want starting from zero",
+      });
+
+      // let's treat it as
+    }
+    if (start === undefined && limit == undefined) {
+      data = dataFromDB.slice(parseInt(0), start);
+      console.log(data);
+
+      console.log("limit undefined");
+      data.unshift({
+        Message:
+          "No entry given for start or for limit, so you're getting all the values",
+      });
+    } else {
+      data = dataFromDB.slice(parseInt(start), end);
+      console.log(data);
+    }
+    let status = "200";
+    res.status(200).json({ status, start, limit, data });
+  } catch (error) {
+    console.log("error");
+    res.status(500).json({ message: error.message });
+  }
+  client.close();
+  console.log("disconnected!");
+};
+
 module.exports = {
   createGreeting,
   getGreeting,
+  getSeveralGreetings,
 };
