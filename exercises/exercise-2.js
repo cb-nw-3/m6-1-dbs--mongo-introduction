@@ -83,6 +83,43 @@ const getGreeting = async (req, res) => {
   });
 };
 
+const updateGreeting = async (req, res) => {
+  let _id = req.params._id;
+  const client = await MongoClient(MONGO_URI, options);
+
+  const query = { _id };
+
+  const greetingKey = req.body["hello"];
+
+  const newValues = { $set: { hello: greetingKey } };
+  console.log(newValues);
+
+  try {
+    await client.connect();
+    const db = client.db("exercise_1");
+
+    let updated = await db
+      .collection("greetings")
+      .updateOne({ _id }, newValues);
+
+    assert.equal(1, updated.matchedCount);
+    assert.equal(1, updated.modifiedCount);
+
+    console.log({ updated });
+
+    res.status(200).json({
+      status: 200,
+      updated,
+      _id,
+    });
+  } catch (error) {
+    console.log(error.stack);
+    res
+      .status(500)
+      .json({ status: 500, data: { _id, newValues }, message: error.message });
+  }
+};
+
 const getSeveralGreetings = async (req, res) => {
   // temporary content... for testing purposes.
   const client = await MongoClient(MONGO_URI, options);
@@ -148,4 +185,5 @@ module.exports = {
   getGreeting,
   getSeveralGreetings,
   deleteGreeting,
+  updateGreeting,
 };
