@@ -7,7 +7,7 @@
 const createGreeting = async (req, res) => {
   // temporary content... for testing purposes.
   console.log(req.body);
-  res.status(200).json("ok");
+  res.status(200).json('ok');
 };
 ```
 
@@ -43,7 +43,7 @@ yarn add assert
 and require it in `exercise-2.js`.
 
 ```js
-const assert = require("assert");
+const assert = require('assert');
 ```
 
 8. Edit `createGreeting`. This time we will wrap our code in a `try / catch` to be able to grab any errors. That part is done for you.
@@ -66,7 +66,7 @@ const createGreeting = async (req, res) => {
 9. Add the item to the database. Here we are declaring a variable `r` that will contain the response from the db server. We use `r.insertedCount` to validate that database received our document and added it to the collection. _Notice that the collection is called `greetings`_. Add these lines within the `try`.
 
 ```js
-const r = await db.collection("greetings").insertOne(req.body);
+const r = await db.collection('greetings').insertOne(req.body);
 assert.equal(1, r.insertedCount);
 ```
 
@@ -89,5 +89,19 @@ res.status(500).json({ status: 500, data: req.body, message: err.message });
   "lang": "French",
   "_id": "FR",
   "hello": "Bonjour"
+}
+```
+
+Object received with error message:
+
+```json
+{
+  "status": 500,
+  "data": {
+    "lang": "English",
+    "_id": "EN",
+    "hello": "Hello"
+  },
+  "message": "E11000 duplicate key error collection: exercise_1.greetings index: _id_ dup key: { _id: \"EN\" }"
 }
 ```

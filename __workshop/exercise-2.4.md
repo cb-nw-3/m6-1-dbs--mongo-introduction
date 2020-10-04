@@ -21,7 +21,7 @@ It really isn't good practice to return _all_ of the data. What would happen if 
 
 11. This is better, but we need to allow user to be able to access all of the data.
 12. If a user were to query our server with this `/ex-2/greeting?start=10&limit=10`, they would receive the 10th to the 20th values. Make this possible in your function.
-    - There should also be fallback values if they only provide ony one of the query params, even none...
+    - There should also be fallback values if they only provide one of the query params, even none...
 13. Finally, if the user requests a range that doesn't exist, is incomplete, we need to handle that. For example, if there are 100 documents, but they ask for `start=90&limit=20`, they should only receive the last 10 and nothing else.
 
 ### Stretch goal
