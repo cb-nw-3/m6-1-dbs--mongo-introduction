@@ -12,7 +12,7 @@ const options = {
 
 const addUser = async (req, res) => {
   const { name } = req.body;
-  console.log('Data sent: ', name);
+  console.log('The name is: ', name);
 
   // creates a new client
   const client = await MongoClient(MONGO_URI, options);
@@ -23,6 +23,7 @@ const addUser = async (req, res) => {
 
   // connect to the database named: exercise_1
   const db = client.db('exercise_1');
+  console.log('Connected!');
 
   // insert the object 'name' from Postman to the DB
   await db.collection('users').insertOne({ name });
@@ -37,6 +38,7 @@ const addUser = async (req, res) => {
 
   // close the connection to the database server
   client.close();
+  console.log('Disconnected!');
 };
 
 module.exports = { addUser };

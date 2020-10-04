@@ -13,26 +13,28 @@ const fs = require('file-system');
 const greetings = JSON.parse(fs.readFileSync('data/greetings.json'));
 
 const batchImport = async (greetings) => {
-  console.log(greetings);
-  // creates a new client
+  // declare a variable called `client`, and assign it the `MongoClient()
   const client = await MongoClient(MONGO_URI, options);
 
   try {
     // connect to the client
     await client.connect();
+    console.log('Connecting...');
 
     // connect to the database named 'exercise_2'
     const db = client.db('exercise_2');
+    console.log('Connected!');
 
     // create a new collection named 'greetings' and insert body from req
     const r = await db.collection('greetings').insertMany(greetings);
     console.log('Greetings length is: ', greetings.length);
+
     assert.strictEqual(greetings.length, r.insertedCount);
 
     // on success, send
     console.log('Success!', '\n', { status: 201 });
   } catch (err) {
-    // add console error (tested using diff vpn IP address :-))
+    // on failure, send
     console.log(
       'Error: ',
       '\n',
@@ -41,7 +43,10 @@ const batchImport = async (greetings) => {
       `Stack error: ${err.stack}`
     );
   }
+
+  // close the connection to the database server
   client.close();
+  console.log('Disconnected!');
 };
 
 batchImport(greetings);

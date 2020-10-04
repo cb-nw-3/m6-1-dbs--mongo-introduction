@@ -10,15 +10,14 @@ const options = {
 
 // create a new `async` function called `getCollection`.
 const getCollection = async (dbName) => {
-  console.log('Start');
-
   // declare a variable called `client`, and assign it the `MongoClient()
   const client = await MongoClient(MONGO_URI, options);
 
   // connect the client
   await client.connect();
-  console.log('Try to connect');
+  console.log('Connecting...');
 
+  // connect to the database
   const db = client.db(dbName);
   console.log('Connected!');
 

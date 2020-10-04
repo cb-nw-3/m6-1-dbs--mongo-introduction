@@ -11,13 +11,12 @@ const options = {
 };
 
 const dbFunction = async (dbName) => {
-  console.log('Start');
   // creates a new client
   const client = await MongoClient(MONGO_URI, options);
 
   // connect to the client
   await client.connect();
-  console.log('Try to connect');
+  console.log('Connecting...');
 
   // connect to the database (dbName is provided as an argument to the function)
   const db = client.db(dbName);
