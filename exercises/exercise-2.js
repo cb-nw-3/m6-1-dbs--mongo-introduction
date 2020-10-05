@@ -28,16 +28,23 @@ const createGreeting = async (req, res) => {
 //2.3
 
 const getGreeting = async (req, res) => {
-  const _id = req.params._id.toUpperCase();
   try {
+    const _id = req.params._id;
     const client = await MongoClient(MONGO_URI, options);
     await client.connect();
     const db = client.db(DB2);
-
-    await db.collection('greetings').findOne({ _id }, (err, result) => {
-      result
-        ? res.status(200).json({ status: 200, _id, data: result })
-        : res.status(404).json({ status: 404, _id, data: 'Not Found' });
+    await db.collection('greetings').findOne({ _id }, async (err, result) => {
+      if (result) {
+        res.status(200).json({ status: 200, _id, data: result });
+      } else {
+        await db
+          .collection('greetings')
+          .findOne({ lang: _id }, (err, result) => {
+            result
+              ? res.status(200).json({ status: 200, lang: _id, data: result })
+              : res.status(500).json({ status: 400, message: 'Not found' });
+          });
+      }
       client.close();
     });
   } catch (err) {
@@ -45,6 +52,25 @@ const getGreeting = async (req, res) => {
     client.close();
   }
 };
+
+// previous version
+//   const _id = req.params._id.toUpperCase();
+//   try {
+//     const client = await MongoClient(MONGO_URI, options);
+//     await client.connect();
+//     const db = client.db(DB2);
+
+//     await db.collection('greetings').findOne({ _id }, (err, result) => {
+//       result
+//         ? res.status(200).json({ status: 200, _id, data: result })
+//         : res.status(404).json({ status: 404, _id, data: 'Not Found' });
+//       client.close();
+//     });
+//   } catch (err) {
+//     res.status(500).json({ status: 400, data: _id, message: err.message });
+//     client.close();
+//   }
+// };
 
 //2.4
 
@@ -60,7 +86,6 @@ const getManyGreetings = async (req, res) => {
     db.collection('greetings')
       .find()
       .toArray((err, result) => {
-        console.log(result);
         if (result.length) {
           const init =
             startInt < 0
@@ -72,15 +97,15 @@ const getManyGreetings = async (req, res) => {
             startInt + limitInt > result.length
               ? result.length
               : startInt + limitInt;
-
-          console.log('start', start, 'limit', limit, 'init', init, 'end', end);
           res.status(200).json({
             status: 200,
             start: init,
             limit: end - init,
             data: result.slice(init, end),
           });
+          client.close();
         } else {
+          res.status(500).json({ status: 400, message: 'Not found' });
         }
       });
   } catch (err) {
@@ -88,4 +113,59 @@ const getManyGreetings = async (req, res) => {
   }
 };
 
-module.exports = { createGreeting, getGreeting, getManyGreetings };
+//2.5
+const deleteGreeting = async (req, res) => {
+  const _id = req.params._id.toUpperCase();
+  try {
+    const client = await MongoClient(MONGO_URI, options);
+    await client.connect();
+    const db = client.db(DB2);
+
+    const r = await db.collection('greetings').deleteOne({ _id });
+    assert.strictEqual(1, r.deletedCount);
+    client.close();
+    res.status(201).json({
+      status: 204,
+      deletedCount: r.deletedCount,
+    });
+  } catch (err) {
+    res.status(500).json({ status: 500, _id, message: err.message });
+    client.close();
+  }
+};
+
+//2.6
+const updateGreeting = async (req, res) => {
+  const _id = req.params._id.toUpperCase();
+  const value = req.body['hello'];
+  if (!!value) {
+    try {
+      const client = await MongoClient(MONGO_URI, options);
+      await client.connect();
+      const db = client.db(DB2);
+
+      const r = await db
+        .collection('greetings')
+        .updateOne({ _id }, { $set: { hello: value } });
+      assert.strictEqual(1, r.deletedCount);
+      client.close();
+      res.status(201).json({
+        status: 204,
+        deletedCount: r.deletedCount,
+      });
+    } catch (err) {
+      res.status(500).json({ status: 500, _id, message: err.message });
+      client.close();
+    }
+  } else {
+    res.status(500).json({ status: 500, _id, message: 'not valid keys' });
+  }
+};
+
+module.exports = {
+  createGreeting,
+  getGreeting,
+  getManyGreetings,
+  deleteGreeting,
+  updateGreeting,
+};
