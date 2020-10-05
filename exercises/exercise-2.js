@@ -147,7 +147,8 @@ const updateGreeting = async (req, res) => {
       const r = await db
         .collection('greetings')
         .updateOne({ _id }, { $set: { hello: value } });
-      assert.strictEqual(1, r.deletedCount);
+      assert.strictEqual(1, r.matchedCount);
+      assert.strictEqual(1, r.modifiedCount);
       client.close();
       res.status(201).json({
         status: 204,
