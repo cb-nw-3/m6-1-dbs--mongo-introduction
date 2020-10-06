@@ -3,9 +3,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
-const { getUsers } = require("./exercises/exercise-1.3");
-const { addUser } = require("./exercises/exercise-1.4");
-
+const { getUsers } = require("./__workshop/exercises/exercise-1.3");
+const { addUser } = require("./__workshop/exercises/exercise-1.4");
+const { createGreeting } = require("./__workshop/exercises/exercise-2");
 const PORT = process.env.PORT || 8000;
 
 express()
@@ -16,9 +16,11 @@ express()
   .use("/", express.static(__dirname + "/"))
 
   // exercise 1
-
+.get("/exercise-1/users",getUsers)
+.get("/hello", (req, res) => res.send("Hi"))
   // exercise 2
-
+  .post("/exercise-1/users",addUser)
+  .post("/exercise-2/greeting",createGreeting)
   // handle 404s
   .use((req, res) => res.status(404).type("txt").send("🤷‍♂️"))
 
