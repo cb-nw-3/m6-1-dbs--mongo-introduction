@@ -41,4 +41,26 @@ const getGreeting = async (req, res) => {
   client.close();
 };
 
-module.exports = { createGreeting, getGreeting };
+const getGreetings = async (req, res) => {
+  const client = MongoClient(MONGO_URI, options);
+  const start = req.query.start || 0;
+  const limit = req.query.limit || 25;
+
+  try {
+    await client.connect();
+    const db = client.db("exercise_1");
+    const r = await db.collection("greetings").find().toArray();
+    const finalValue = Number(limit) + Number(start);
+    if (finalValue > r.length) {
+      res.status(200).json({ data: r.slice(Number(start), r.length) });
+    } else {
+      res.status(200).json({ data: r.slice(Number(start), finalValue) });
+    }
+
+    let result = r.slice(start, Number(limit) + Number(start));
+  } catch (error) {
+    res.status(500).send({ error, status: 500 });
+  }
+};
+
+module.exports = { createGreeting, getGreeting, getGreetings };
