@@ -45,4 +45,41 @@ const getGreeting = async (req, res) => {
   });
 };
 
-module.exports = { createGreeting, getGreeting };
+const getGreetings = async (req, res) => {
+  const { start, limit } = req.query;
+  const client = await MongoClient(MONGO_URI, options);
+  await client.connect();
+  const db = client.db("exercise_2");
+
+  let data = await db.collection("greetings").find().toArray();
+
+  let numStart = Number(start);
+  console.log(numStart);
+  let numLimit = Number(limit);
+
+  let slicedData = [];
+
+  if (numStart < 0) {
+    numStart = 0;
+    slicedData = data.slice(numStart, numStart + numLimit);
+  } else if (numLimit > data.length || numStart > data.length) {
+    numStart = data.length - 10;
+    slicedData = data.slice(numStart);
+  } else {
+    slicedData = data.slice(numStart, numStart + numLimit);
+  }
+
+  if (data.length === 0) {
+    res.status(404).json({ status: 404, data: data });
+  } else {
+    res.status(200).json({
+      status: 200,
+      start: numStart,
+      limit: numLimit,
+      data: slicedData,
+    });
+  }
+  client.close();
+};
+
+module.exports = { createGreeting, getGreeting, getGreetings };
