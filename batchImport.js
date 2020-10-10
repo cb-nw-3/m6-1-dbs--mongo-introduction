@@ -12,7 +12,7 @@ const batchImport = async () => {
     const client = await MongoClient(MONGO_URI);
     await client.connect();
     console.log(greetings);
-    const db = client.db("exercise_1");
+    const db = client.db("exercise_2");
     const r = await db.collection("greetings").insertMany(greetings);
     greetings.length, r.insertedCount;
     client.close();
