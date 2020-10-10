@@ -100,4 +100,37 @@ const deleteGreeting = async (req, res) => {
   client.close();
 };
 
-module.exports = { createGreeting, getGreeting, getGreetings, deleteGreeting };
+const updateGreeting = async (req, res) => {
+  const query = req.params;
+  const { hello } = req.body;
+
+  if (!hello) {
+    return res
+      .status(400)
+      .json({ status: 400, data: req.body, message: "Invalid data" });
+  }
+
+  const newValues = { $set: { hello } };
+
+  const client = await MongoClient(MONGO_URI, options);
+  try {
+    await client.connect();
+    const db = client.db("exercise_2");
+    const r = await db.collection("greetings").updateOne(query, newValues);
+    assert.strictEqual(1, r.matchedCount);
+    assert.strictEqual(1, r.modifiedCount);
+    res.status(200).json({ status: 200, query, ...req.body });
+  } catch (err) {
+    console.log(err.stack);
+    res.status(404).json({ status: 404, message: `${query} not found` });
+  }
+  client.close();
+};
+
+module.exports = {
+  createGreeting,
+  getGreeting,
+  getGreetings,
+  deleteGreeting,
+  updateGreeting,
+};
