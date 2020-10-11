@@ -25,9 +25,9 @@ express()
   .post("/exercise-1/users", addUser)
   // exercise 2
   .post("/exercise-2/greeting", createGreeting)
-  .get("/exercise-2/greeting/:_id", getGreeting)
+  .get("/exercise-2/greetings/:lang", getGreeting)
   .get("/exercise-2/greetings", getGreetings)
-  .delete('/exercise-2/greeting/:_id', deleteGreeting)
+  .delete('/exercise-2/greetings/:_id', deleteGreeting)
   // .put('/exercise-2/greeting/:_id', updateGreeting)
 
   // handle 404s

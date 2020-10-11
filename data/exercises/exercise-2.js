@@ -21,14 +21,23 @@ const createGreeting = async (req, res) => {
 };
 
 const getGreeting = async (req, res) => {
-  res.status(200).json("bacon");
-  const { _id } = req.params;
-  db.collection("greetings").findOne({ _id }, (err, result) => {
+  try{
+    const lang = req.params;
+    const client = await MongoClient(MONGO_URI);
+  await client.connect();
+  const db = client.db("exercise_2");
+  // res.status(200).json("bacon");
+  
+  db.collection("greetings").findOne(lang,{},(err, result) => {
     result
-      ? res.status(200).json({ status: 200, _id, data: result })
-      : res.status(404).json({ status: 404, _id, data: "Not Found" });
-    client.close();
+      ? res.status(200).json({ status: 200, lang, data: result })
+      : res.status(400).json({ status: 400, lang, data: 'Not Found' });
+    
   });
+  client.close();
+}catch(err){
+  res.status(500).json({ status: 500, data: req.body, message: err.message });
+}
 };
 
 const getGreetings = async (req, res) => {
@@ -54,18 +63,18 @@ const getGreetings = async (req, res) => {
 
 const deleteGreeting = async (req, res) => {
   try{
-  const { _id } = req.params;
+  const {_id} = req.params;
   const client = await MongoClient(MONGO_URI);
 await client.connect();
 const db = client.db("exercise_2");
-const d = db.collection("greetings").deleteOne({_id});
-assert.equal(1, d.deleteCount);
-    res.status(204).json("done");
-    client.close();
-    res.status(204).json({ status: 204, _id });
+const r = await db.collection("greetings") .deleteOne({_id: _id.toUpperCase() });
+assert.equal(1, r.deleteCount);
+    // res.status(204).json("done");
+    res.status(204).json({ status: 201, _id });
   }catch(err){
     res.status(500).json({status:500,data: req.body, mesage: err.message})
   }
+  client.close();
 };
 
 module.exports = {
