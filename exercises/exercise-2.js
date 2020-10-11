@@ -16,7 +16,8 @@ const createGreeting = async (req,res) => {
     await client.connect();
     const db = client.db("exercises");
     console.log("connected");
-    await db.collection("greetings").insertOne(req.body);
+    const r = await db.collection("greetings").insertOne(req.body);
+    assert.equal(1, r.insertedCount);
     res.status(201).json({ status: 201, data: req.body });
   } catch (err) {
     console.log(err.stack);
