@@ -77,10 +77,31 @@ assert.equal(1, r.deleteCount);
   client.close();
 };
 
+const updateGreeting = async (req, res) => {
+  try{
+     const _id = req.params._id;
+  const query = { _id };
+  const {hello} = req.body;
+ //$set: is to not remove the other data when i add a new data 
+  const newValues = { $set: {hello}};
+  const client = await MongoClient(MONGO_URI);
+await client.connect();
+const db = client.db("exercise_2");
+const r = await db.collection("greetings") .updateOne(query,newValues);
+assert.equal(1, r.matchedCount);
+assert.equal(1, r.modifiedCount);
+
+  
+res.status(200).json({ status: 200, _id,...req.body });
+  }catch(err){
+    res.status(500).json({status:500,data: req.body, mesage: err.message})
+  }
+  client.close();
+};
 module.exports = {
   createGreeting,
   getGreeting,
   getGreetings,
   deleteGreeting,
-  
+  updateGreeting
 };
