@@ -40,4 +40,30 @@ const getGreeting = async (req, res) => {
   })
 };
 
-module.exports = {createGreeting, getGreeting};
+const getGreetings = async (req, res) => {
+  const client = await MongoClient(MONGO_URI, options);
+  await client.connect();
+  const db = client.db("exercices");
+  db.collection("greetings").find().toArray((err, result) => {
+    if(result) {
+      //here 0 is the default index
+      let start = Number(req.query.start) || 0;
+      if(start < 0 || start > result.length - 1){
+        start = 0;
+      }
+      //here 25 is the default number of items
+      let limit = Number(req.query.limit) || 25;
+      if(limit + start > (result.length - 1)){
+        limit = (result.length - 1) - start;
+      }
+      const end = (start + limit);
+      const greetings = result.slice(start, end);
+      res.status(200).json({ status: 200, data: greetings })
+    } else {
+      res.status(404).json({ status: 404, data: "Not Found" });
+    }
+    client.close();
+  })
+};
+
+module.exports = {createGreeting, getGreeting, getGreetings};
