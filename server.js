@@ -3,8 +3,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
-const { getUsers } = require("./exercises/exercise-1.3");
-const { addUser } = require("./exercises/exercise-1.4");
+// const { getUsers } = require("./exercises/exercise-1.3");
+// const { addUser } = require("./exercises/exercise-1.4");
 
 const PORT = process.env.PORT || 8000;
 
