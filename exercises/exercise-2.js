@@ -47,7 +47,7 @@ const getGreeting = async (req, res) => {
   });
 };
 
-const getMultipleGreetings = async () => {
+const getMultipleGreetings = async (req, res) => {
   const client = await MongoClient(MONGO_URI, options);
   console.log("connected");
   await client.connect();
@@ -65,4 +65,28 @@ const getMultipleGreetings = async () => {
     });
 };
 
-module.exports = { createGreeting, getGreeting, getMultipleGreetings };
+const deleteGreeting = async (req, res) => {
+  const client = await MongoClient(MONGO_URI, options);
+  const { _id } = req.params;
+
+  try {
+    await client.connect();
+    console.log("connected");
+    const db = client.db("exercise_1");
+    const r = await db.collection("greetings").deleteOne({ _id });
+    assert.strictEqual(1, r.deletedCount);
+
+    res.status(204).json({ status: 204, data: _id });
+  } catch (err) {
+    res.status(500).json({ status: 500, data: req.body, message: err.message });
+  }
+  client.close();
+  console.log("disconnected");
+};
+
+module.exports = {
+  createGreeting,
+  getGreeting,
+  getMultipleGreetings,
+  deleteGreeting,
+};
